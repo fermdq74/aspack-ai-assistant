@@ -3,6 +3,11 @@ import { z } from "zod";
 import fs from "fs";
 import path from "path";
 
+export interface KnowledgeResult {
+  source: string;
+  excerpt: string;
+}
+
 const KNOWLEDGE_DIR = path.join(process.cwd(), "knowledge");
 const CONTEXT_LINES = 5; // lines of context around each match
 const MAX_RESULTS = 6;
@@ -82,6 +87,36 @@ function searchFile(
     excerpt: excerptLines.join("\n").trim(),
     matchCount,
   };
+}
+
+/**
+ * Proactive search: runs before the LLM call and returns formatted context
+ * ready to inject into the system prompt. More reliable than tool-based RAG
+ * because it doesn't depend on the model choosing to call the tool.
+ */
+export function proactiveKnowledgeSearch(query: string): KnowledgeResult[] {
+  const terms = query
+    .split(/\s+/)
+    .filter((t) => t.length > 2)
+    .slice(0, 10);
+
+  if (terms.length === 0) return [];
+
+  const files = getAllMarkdownFiles(KNOWLEDGE_DIR);
+  if (files.length === 0) return [];
+
+  const results: SearchResult[] = [];
+  for (const file of files) {
+    const result = searchFile(file, terms);
+    if (result) results.push(result);
+  }
+
+  results.sort((a, b) => b.matchCount - a.matchCount);
+
+  return results.slice(0, MAX_RESULTS).map((r) => ({
+    source: `knowledge/${r.source}`,
+    excerpt: r.excerpt,
+  }));
 }
 
 export const searchKnowledgeTool = tool({

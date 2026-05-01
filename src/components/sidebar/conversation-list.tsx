@@ -100,8 +100,8 @@ export function ConversationList({ onNavigate }: ConversationListProps) {
   if (conversations.length === 0) {
     return (
       <div className="px-3 py-6 text-center">
-        <MessageSquare className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
-        <p className="text-xs text-muted-foreground">
+        <MessageSquare className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+        <p className="text-xs text-slate-500">
           No hay conversaciones aún.
           <br />
           Empieza una nueva.
@@ -119,20 +119,20 @@ export function ConversationList({ onNavigate }: ConversationListProps) {
             <div
               key={conv.id}
               className={cn(
-                "group flex items-center gap-2 rounded-md px-2 py-2 cursor-pointer transition-colors",
+                "group flex items-start gap-2 rounded-md px-2 py-2 cursor-pointer transition-colors",
                 isActive
-                  ? "bg-accent text-accent-foreground"
-                  : "hover:bg-accent/50 text-foreground/80"
+                  ? "bg-slate-700 text-white"
+                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
               )}
               onClick={() => {
                 router.push(`/chat/${conv.id}`);
                 onNavigate?.();
               }}
             >
-              <MessageSquare className="w-3.5 h-3.5 shrink-0 text-muted-foreground" />
+              <MessageSquare className="w-3.5 h-3.5 shrink-0 text-slate-400 mt-0.5" />
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium truncate">{conv.title}</p>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-base font-medium break-words leading-snug">{conv.title}</p>
+                <p className="text-xs text-slate-500 mt-0.5">
                   {formatRelativeDate(conv.updatedAt)}
                 </p>
               </div>
@@ -141,10 +141,7 @@ export function ConversationList({ onNavigate }: ConversationListProps) {
                   e.stopPropagation();
                   setDeleteId(conv.id);
                 }}
-                className={cn(
-                  "shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity hover:bg-destructive/10 hover:text-destructive",
-                  isActive && "opacity-60"
-                )}
+                className="shrink-0 p-1 rounded opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-red-400 hover:bg-red-400/10 mt-0.5"
                 aria-label="Eliminar conversación"
               >
                 <Trash2 className="w-3 h-3" />

@@ -48,8 +48,8 @@ export function Sidebar({ user }: SidebarProps) {
           <PackageOpen className="w-5 h-5 text-primary-foreground" />
         </div>
         <div className="min-w-0">
-          <h1 className="text-sm font-semibold truncate text-white">ASPACK AI</h1>
-          <p className="text-[10px] text-slate-400 truncate">
+          <h1 className="text-base font-semibold truncate text-white">ASPACK AI</h1>
+          <p className="text-xs text-slate-400 truncate">
             Asistente de embalaje
           </p>
         </div>
@@ -59,8 +59,7 @@ export function Sidebar({ user }: SidebarProps) {
         <Button
           onClick={handleNewChat}
           variant="outline"
-          size="sm"
-          className="w-full justify-start gap-2 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white"
+          className="w-full justify-start gap-2 bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700 hover:text-white text-base"
         >
           <Plus className="w-4 h-4" />
           Nueva conversación
