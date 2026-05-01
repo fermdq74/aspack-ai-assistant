@@ -197,7 +197,7 @@ export function MessageItem({ message }: MessageItemProps) {
                 remarkPlugins={[remarkGfm]}
                 components={{
                   img: ({ src, alt }) => {
-                    if (!src) return null;
+                    if (!src || typeof src !== "string") return null;
                     return (
                       <span className="block my-3">
                         <span className="relative group inline-block rounded-xl overflow-hidden border border-border shadow-sm">
