@@ -5,8 +5,13 @@ import remarkGfm from "remark-gfm";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { PackageOpen, User, Download, Search, ImageIcon, Loader2 } from "lucide-react";
+import { PackageOpen, User, Download, Loader2, BookOpen } from "lucide-react";
 import type { Message, ToolInvocation } from "ai";
+
+interface KnowledgeAnnotation {
+  type: "knowledge_search";
+  sources: string[];
+}
 
 interface MessageItemProps {
   message: Message;
@@ -78,7 +83,7 @@ function KnowledgeToolInvocation({ invocation }: { invocation: ToolInvocation })
   if (invocation.state === "call") {
     return (
       <div className="flex items-center gap-2 text-sm text-muted-foreground bg-slate-50 border border-border rounded-lg px-3 py-2 my-2">
-        <Search className="w-4 h-4 text-primary animate-pulse" />
+        <BookOpen className="w-4 h-4 text-primary animate-pulse" />
         <span>Consultando base de conocimiento…</span>
       </div>
     );
@@ -95,6 +100,21 @@ function ToolInvocationRenderer({ invocation }: { invocation: ToolInvocation }) 
     return <KnowledgeToolInvocation invocation={invocation} />;
   }
   return null;
+}
+
+function KnowledgeAnnotationBadge({ annotations }: { annotations: unknown[] }) {
+  const knowledgeAnnotation = annotations.find(
+    (a): a is KnowledgeAnnotation =>
+      typeof a === "object" && a !== null && (a as KnowledgeAnnotation).type === "knowledge_search"
+  );
+  if (!knowledgeAnnotation) return null;
+
+  return (
+    <div className="flex items-center gap-1.5 text-xs text-slate-400 mb-2">
+      <BookOpen className="w-3.5 h-3.5" />
+      <span>Consultando base de conocimiento</span>
+    </div>
+  );
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -118,7 +138,7 @@ export function MessageItem({ message }: MessageItemProps) {
             <PackageOpen className="w-4 h-4" />
           </AvatarFallback>
         </Avatar>
-        <div className="max-w-[80%]">
+        <div className="flex-1">
           {message.toolInvocations!.map((inv) => (
             <ToolInvocationRenderer key={inv.toolCallId} invocation={inv} />
           ))}
@@ -150,12 +170,17 @@ export function MessageItem({ message }: MessageItemProps) {
       {/* Bubble */}
       <div
         className={cn(
-          "max-w-[80%] rounded-2xl px-4 py-2.5 text-sm shadow-sm",
+          "rounded-2xl px-4 py-2.5 text-base shadow-sm",
           isUser
             ? "bg-primary text-primary-foreground rounded-tr-sm"
             : "bg-white border border-border text-foreground rounded-tl-sm"
         )}
       >
+        {/* Knowledge search annotation */}
+        {!isUser && message.annotations && message.annotations.length > 0 && (
+          <KnowledgeAnnotationBadge annotations={message.annotations} />
+        )}
+
         {/* Tool invocations rendered inside the bubble for assistant messages */}
         {!isUser && hasToolInvocations &&
           message.toolInvocations!.map((inv) => (
